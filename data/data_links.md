@@ -1,3 +1,6 @@
 # Data Sources
 
-This file should describe access to all the raw data required to reproduce the project and instructions on setting up the `data/` folder. Provide publicly accessible download links to your files (GDrive, S3 buckets, etc.)
+The dataset for the Handmade category from Amazon can be downloaded from the following link:
+https://huggingface.co/datasets/McAuley-Lab/Amazon-Reviews-2023/tree/main/raw
+
+Make sure to navigate to the meta and review folders within the repository, and then look for the JSON file corresponding to the Handmade category. If you need further assistance with downloading the dataset, feel free to ask!
