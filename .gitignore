@@ -2,3 +2,11 @@
 *.log
 *.pyc
 *jsonl
+*.pkl
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+# Ignore IDE/editor-specific files
+.virtual_documents/
+# Ignore macOS .DS_Store files
+.DS_Store
+notebooks/.DS_Store
