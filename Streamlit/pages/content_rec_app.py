@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import os
 from enhanced_recommender import get_recommendations
 
 # Configure warnings and page settings
@@ -158,18 +157,7 @@ elif st.session_state.page == 'recommender':
     # Cache data loading
     @st.cache_data
     def load_data():
-        # List files in the current directory
-        current_directory_files = os.listdir('.')
-        print("Files in the current directory:")
-        for file in current_directory_files:
-            print(file)
-
-        # List files in the parent directory (one level up)
-        parent_directory_files = os.listdir('../')
-        print("\nFiles in the parent directory:")
-        for file in parent_directory_files:
-            print(file)
-        return pd.read_pickle('../data/content_rec_data.pkl')
+        return pd.read_pickle('./Streamlit/data/content_rec_data.pkl')
 
     rec_data = load_data()
 
