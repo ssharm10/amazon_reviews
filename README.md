@@ -144,6 +144,9 @@ This approach enhances recommendations by blending text similarity with key busi
 * `notebooks`
     - contains all final notebooks involved in the project
 
+* `Streamlit`
+    - Contains necessary files for Streamlit app
+
 * `visualizations`
     - Contains key figures and plots generated during analysis and modeling
 
