@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import os
 from enhanced_recommender import get_recommendations
 
 # Configure warnings and page settings
