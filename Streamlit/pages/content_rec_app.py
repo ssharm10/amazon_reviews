@@ -12,15 +12,15 @@ st.set_page_config(
     layout="wide"
 )
 
-# # Initialize session state variables
-# if 'run_recommender' not in st.session_state:
-#     st.session_state.run_recommender = False
-# if 'item_title' not in st.session_state:
-#     st.session_state.item_title = ""
-# if 'top_n' not in st.session_state:
-#     st.session_state.top_n = 8
-# if 'rating_threshold' not in st.session_state:
-#     st.session_state.rating_threshold = 20
+# Initialize session state variables
+if 'run_recommender' not in st.session_state:
+    st.session_state.run_recommender = False
+if 'item_title' not in st.session_state:
+    st.session_state.item_title = ""
+if 'top_n' not in st.session_state:
+    st.session_state.top_n = 8
+if 'rating_threshold' not in st.session_state:
+    st.session_state.rating_threshold = 20
 
 # Cache data loading
 @st.cache_data
