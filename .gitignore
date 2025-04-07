@@ -2,8 +2,8 @@
 *.log
 *.pyc
 *jsonl
-data/*.pkl  # ignores .pkl in /data/
-!Streamlit/data/*.pkl  # Explicitly keeps .pkl in /Streamlit/data/
+*.pkl  # ignores .pkl in /data/
+#!Streamlit/data/*.pkl  # Explicitly keeps .pkl in /Streamlit/data/
 # Ignore Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 # Ignore IDE/editor-specific files
