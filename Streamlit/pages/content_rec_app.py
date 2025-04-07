@@ -158,9 +158,17 @@ elif st.session_state.page == 'recommender':
     # Cache data loading
     @st.cache_data
     def load_data():
-        # Print the files in the directory
-        files_in_directory = os.listdir('../data')
-        st.write("Files in data directory:", files_in_directory)
+        # List files in the current directory
+        current_directory_files = os.listdir('.')
+        print("Files in the current directory:")
+        for file in current_directory_files:
+            print(file)
+
+        # List files in the parent directory (one level up)
+        parent_directory_files = os.listdir('../')
+        print("\nFiles in the parent directory:")
+        for file in parent_directory_files:
+            print(file)
         return pd.read_pickle('../data/content_rec_data.pkl')
 
     rec_data = load_data()
