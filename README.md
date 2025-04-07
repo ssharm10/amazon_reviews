@@ -3,19 +3,19 @@
 =========================
 
 ## Table of Contents
-
 1. [Project Overview](#project-overview)
-2. [Dataset Description](#dataset)
-3. [Why Bayesian?](#bayesian)
-4. [Metadata Cleaning and Preprocessing](#metadata)
-5. [Early Reviews Preprocessing](#earlyreviews)
-6. [Key Insights from Modeling](#model)
-7. [Model Utility for Stakeholders](#evaluation)
-8. [Recommender System](#recommender)
-9. [Data Dictionary](#data-dictionary)
+2. [Dataset Description](#dataset-description)
+3. [Why Bayesian?](#why-bayesian)
+4. [Metadata Cleaning](#metadata-cleaning-and-preprocessing)
+5. [Early Reviews](#early-reviews-preprocessing)
+6. [Model Insights](#key-insights-from-modeling)
+7. [Stakeholder Utility](#model-utility-for-stakeholders)
+8. [Recommender System](#recommender-system)
+9. [Project Organization](#project-organization)
+10. [Data Dictionary](#data-dictionary)
 
 
-### Project Overview
+## Project Overview
 This project tackles two critical challenges in e-commerce:
 
 **Popularity Prediction**: Can we predict a product’s success using metadata and early ratings? 
@@ -43,14 +43,14 @@ This recommendation engine balances textual similarity with Bayesian-adjusted ra
 
 *Business Impact*: Personalized recommendations drive repeat purchases, improving customer retention and sales growth. 
 
-### Dataset Description
+## Dataset Description
 This project leverages the [Amazon Reviews 2023 dataset](https://huggingface.co/datasets/McAuley-Lab/Amazon-Reviews-2023/tree/main/raw) focusing on the Handmade items category. Amazon Review 2023 is an updated version of the Amazon Review 2018 dataset and includes richer, cleaner metadata with more precise timestamps. With over 600k reviews and 400MB of metadata, this dataset provides a strong foundation for analyzing product popularity and recommendation strategies. The dataset consists of two key components:
 - Metadata: Contains product titles/descriptions, categories, price, store etc. This data is used for Stage 1 popularity prediction and to generate content-based recommendations.
 - Reviews: Includes customer reviews and text feedback. These are incorporated in Stage 2, where early user ratings help refine popularity predictions.
 
 Due to computational constraints, we work with a sub-sampled version of the dataset in this project. However, our approach is designed to scale and can be extended to the full dataset with appropriate resources.
 
-### Why Bayesian?
+## Why Bayesian?
 Imagine two competing products on Amazon: a new listing with a perfect 5-star rating from just 2 reviews and an established product with a 4.8-star average from 500 reviews. A simple average would rank the new product higher, despite its unreliable sample size.
 
 Bayesian ratings correct this by weighting each product’s score against the global average (4.49 in our dataset). Initially, all products start at this baseline, gradually shifting toward their true rating as more reviews accumulate. The adjustment depends on the number of reviews relative to our trust threshold of 20 ratings (the 75th percentile in our dataset).
@@ -62,16 +62,16 @@ A product with only 2 ratings at 5 stars will have its rating pulled toward 4.5,
 ![Target Definition](visualizations/target_variable.png)
 By applying Bayesian ratings, we define a balanced binary target for popularity prediction, turning this into a classification problem. We set a threshold of 4.5 to determine whether an item is considered popular or not.
 
-### Metadata Cleaning and Preprocessing
+## Metadata Cleaning and Preprocessing
 
 The metadata required extensive cleaning, particularly for text-based columns such as product categories and product details, to extract meaningful features. The product categories are represented hierarchically in the dataset, with some products having up to five levels of subcategories. To make this information usable in our model, we :
 
 - Cleaned labels associated with different subcategories to ensure consistency and avoid repetitive representations.
 - Created a `combined_category` column by merging the first two levels of the subcategory hierarchy to ensure no missing values.
 
-Product details, such as package dimensions, weight, department, and features, are provided as a list of dictionaries in the "details" column. We unpacked this information into individual columns to assess their suitablity for modeling.
+Product details, such as date first available, package dimensions, weight, department, and features, are provided as a list of dictionaries in the "details" column. We unpacked this information into individual columns to create suitable features for our model.
 
-#### Feature Engineering
+### Feature Engineering
 
 A key challenge when working with product metadata is the limited number of numerical features available for the model. As a result, significant effort was put into feature engineering. Key findings from the exploratory data analysis (EDA) process highlighted that store and product category play an important role in determining product popularity. Therefore, we:
 
@@ -80,11 +80,11 @@ A key challenge when working with product metadata is the limited number of nume
 - Calculated product ages using the column `date_first_available`.
 - Created new feature representing the number of images shown on the product page, as we weren't directly utilizing product images in our model.
 
-#### Text Preprocessing
+### Text Preprocessing
 
 We integrated product features into our model by applying Natural Language Processing (NLP) techniques for text vectorization. A new feature was created by combining the product title, description, and product features into a single column. This column was then vectorized using TF-IDF. To enhance the vectorization process, we built a custom tokenizer to clean the text data effectively. Although we experimented with word embeddings from a pre-trained model, the results did not significantly improve the model’s performance, so we decided to exclude this approach from our analysis.
 
-### Early Reviews Preprocessing
+## Early Reviews Preprocessing
 
 For Stage 2 of our popularity prediction, we created features like early_rating_avg (average of the first 5 ratings) and early_verified_ratio (ratio of verified purchases in the first 5 reviews).
 
@@ -92,7 +92,7 @@ The verified purchase ratio is crucial as it can help identify fake reviews, wit
 
 These features helped provide early insights into product reception, aiding the model in predicting product popularity more effectively.
 
-### Key Insights from Modeling
+## Key Insights from Modeling
 We achieved similar model performances using a Logistic Regression and Random Forest model for meta data modeling, achieving a total accuracy of 66% which is about 18% improvement over random-guessing(50-50 split on target). Incorporating early reviews significantly enhanced its ability to distinguish between popular and unpopular products, increasing accuracy to 78%.
 <p align="center">
   <img src="visualizations/metadata_metrics.png" alt="Metadata model" width="45%">
@@ -106,7 +106,7 @@ A key driver of the model’s performance was the engineering of numerical featu
 Overall, the model’s performance aligns with industry benchmarks for metadata-based models (Linden et al., 2017; Wang et al., 2020; Chen et al., 2023). To further enhance performance, incorporating more diverse and meaningful features could be beneficial. Potential improvements include utilizing neural networks to capture complex patterns in the data, expanding the feature space with additional attributes such as user behavior patterns, brand verification from external sources, and product image analysis using image embeddings.
 
 
-### Model Utility for Stakeholders
+## Model Utility for Stakeholders
 We also evaluated the model’s impact on different stakeholders to assess its practical value and identify areas for improvement. The model’s ability to classify products as popular or unpopular has distinct implications for customers, sellers, and amazon.
 
 For **customers**, maximizing precision (i.e., reducing false positives) is crucial, as it ensures that recommended products are of high quality and worth purchasing. False positives in product recommendations could lead to customers being shown items that don’t meet their expectations, which can reduce satisfaction.
@@ -117,7 +117,7 @@ For **platform operators** like Amazon, maximizing precision for unpopular produ
 
 Given the current performance, the model is best suited for applications where a balance between precision and recall is required. This includes helping customers discover high-quality products while ensuring sellers have adequate visibility for their products. However, depending on the primary stakeholder’s needs, the decision threshold could be adjusted. For example, a customer-focused application might prioritize higher precision, while a seller-focused one might optimize for recall to reduce missed opportunities.
 
-### Recommender System
+## Recommender System
 
 The recommender system combines content-based and numeric-based approaches to provide more relevant recommendations to users. It integrates text similarity using TF-IDF with weighted numerical features like Bayesian ratings and product price, ensuring recommendations are not only similar in content but also well-rated and appropriately priced.
 
@@ -131,7 +131,38 @@ Key Features:
 
 This approach enhances recommendations by blending text similarity with key business factors, while promoting newer products, all accessible through an interactive Streamlit interface.
 
-### Data Dictionary
+## Project Organization
+
+**Repository :**
+
+* `data` 
+    - contains link to the datasource
+
+* `models`
+    - `joblib` dump of final model(s)
+
+* `notebooks`
+    - contains all final notebooks involved in the project
+
+* `visualizations`
+    - Contains key figures and plots generated during analysis and modeling
+
+* `docs`
+    - Final report, presentations made as a part of BrainStation DataScience Bootcamp
+
+* `.gitignore`
+    - Part of Git, includes files and folders to be ignored by Git version control
+
+* `amazon_reviews.yml`
+    - Conda environment specification
+
+* `README.md`
+    - Project landing page (this page)
+
+* `LICENSE`
+    - Project license
+
+## Data Dictionary
 
 This is the final data dictionary containing all the features used for metadata and early reviews modeling.
 
