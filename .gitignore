@@ -2,7 +2,7 @@
 *.log
 *.pyc
 *jsonl
-*.pkl
+data/*.pkl  # Only ignores .pkl in /data/
 # Ignore Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 # Ignore IDE/editor-specific files
