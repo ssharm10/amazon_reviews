@@ -9,7 +9,7 @@ import unicodedata
 
 
 # # First download the Large English Pipeline from Spacy
-# !python -m spacy download en_core_web_lg
+!python -m spacy download en_core_web_lg
 
 # Then Load the large English pipeline
 nlp = spacy.load('en_core_web_lg', disable=["parser", "ner"])  # Disabling parser & NER for efficiency
