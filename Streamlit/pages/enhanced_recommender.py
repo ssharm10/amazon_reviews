@@ -7,6 +7,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 import spacy
 import unicodedata
 import time
+import logging
+logging.basicConfig(level=logging.INFO)
 time.sleep(10)  # Give extra time for cloud initialization
 
 # # First download the Large English Pipeline from Spacy
@@ -55,9 +57,6 @@ def custom_tokenizer(row):
     unique_tokens = list(dict.fromkeys(tok_lemmas))
 
     return unique_tokens  # Convert list to a single string
-
-import logging
-logging.basicConfig(level=logging.INFO)
 
 #Function to generate recommendations
 def get_recommendations(df, item_title, top_n=8, text_weight=0.7, 
