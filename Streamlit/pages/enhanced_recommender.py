@@ -79,7 +79,6 @@ def get_recommendations(df, item_title, top_n=8, text_weight=0.7,
     """
     try:
         logging.info(f"Input data shape: {df.shape}")  # Check data loaded
-        logging.info(f"Columns: {df.columns.tolist()}")
     
 
         # Create TF-IDF vectorizer
@@ -89,7 +88,8 @@ def get_recommendations(df, item_title, top_n=8, text_weight=0.7,
             max_df=0.7,
             stop_words='english'
         )
-
+        logging.info(f"Columns: {df.columns.tolist()}")
+        
         # Extract the parent_asin of the item 
         product_id = df.loc[df['product_title'] == item_title,'parent_asin'].values[0]
         item_index = df[df['parent_asin'] == product_id].index[0]
