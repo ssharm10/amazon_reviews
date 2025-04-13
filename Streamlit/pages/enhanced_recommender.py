@@ -14,7 +14,9 @@ time.sleep(10)  # Give extra time for cloud initialization
 
 # Then Load the large English pipeline
 nlp = spacy.load('en_core_web_lg', disable=["parser", "ner"])  # Disabling parser & NER for efficiency
-print("✅ spaCy loaded successfully!")  # Check if this appears in logs
+logging.info("✅ spaCy loaded successfully!")  # Check if this appears in logs
+logging.info(f"spaCy model path: {spacy.util.get_package_path('en_core_web_lg')}")
+
 def normalize_text(text):
     """
     Normalizes text by converting special Unicode characters into standard ASCII.
