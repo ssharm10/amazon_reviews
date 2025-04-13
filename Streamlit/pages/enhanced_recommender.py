@@ -5,6 +5,7 @@ from scipy.sparse import load_npz
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import spacy
 import unicodedata
@@ -75,7 +76,7 @@ def load_tfidf():
         min_df=10,
         max_df=0.7
     )
-    
+    vectorizer._tfidf = TfidfTransformer()
     return tfidf_matrix,vectorizer
 
 
@@ -121,7 +122,8 @@ def get_recommendations(df, item_title, top_n=8, text_weight=0.7,
         text_sim = cosine_similarity(query_vec, tfidf_matrix).flatten()  # ← 100x faster
         logging.info(f"Columns4: {df.columns.tolist()}")
         
-        df['text_similarity'] = text_sim[item_index]
+
+        df['text_similarity'] = text_sim
 
         logging.info(f"Columns5: {df.columns.tolist()}")
         #  Normalize numerical features (0 to 1)
