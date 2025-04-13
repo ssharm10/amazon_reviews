@@ -53,6 +53,9 @@ def custom_tokenizer(row):
 
     return unique_tokens  # Convert list to a single string
 
+import logging
+logging.basicConfig(level=logging.INFO)
+
 #Function to generate recommendations
 def get_recommendations(df, item_title, top_n=8, text_weight=0.7, 
                                           numeric_weights={'bayesian_rating': 0.7, 
@@ -74,81 +77,88 @@ def get_recommendations(df, item_title, top_n=8, text_weight=0.7,
     Returns:
     - DataFrame with top_n recommended items and their details
     """
+    try:
+        logging.info(f"Input data shape: {df.shape}")  # Check data loaded
+        logging.info(f"Columns: {df.columns.tolist()}")
+    
 
-    # Create TF-IDF vectorizer
-    tfidf_vectorizer = TfidfVectorizer(
-        lowercase=True,
-        min_df=10,
-        max_df=0.7,
-        stop_words='english'
+        # Create TF-IDF vectorizer
+        tfidf_vectorizer = TfidfVectorizer(
+            lowercase=True,
+            min_df=10,
+            max_df=0.7,
+            stop_words='english'
+        )
+
+        # Extract the parent_asin of the item 
+        product_id = df.loc[df['product_title'] == item_title,'parent_asin'].values[0]
+        item_index = df[df['parent_asin'] == product_id].index[0]
+
+        # Apply TF-IDF vectorization to text features
+        tfidf_matrix = tfidf_vectorizer.fit_transform(df['title_category'])
+        
+        # Calculate cosine similarity for text features
+        text_sim = cosine_similarity(tfidf_matrix)
+        
+        df['text_similarity'] = text_sim[item_index]
+
+        #  Normalize numerical features (0 to 1)
+        df_normalized = df.copy()
+        for col in numeric_weights:
+            if numeric_weights[col] > 0:  # Higher is better
+                df_normalized[col] = (df[col] - df[col].min()) / (df[col].max() - df[col].min())
+            else:  # Lower is better (e.g., price)
+                df_normalized[col] = 1 - (df[col] - df[col].min()) / (df[col].max() - df[col].min())
+
+        # Calculate numerical scores
+        df['numeric_score'] = (
+        df_normalized['bayesian_rating'] * 0.7 -  # Recommend popular products
+        df_normalized['product_price'] * 0.3  # Recommend less pricey products
     )
+        
+        # Combine scores
+        df['combined_score'] = (text_weight * df['text_similarity']) + ((1 - text_weight) * df['numeric_score'])
+        
+        # Save results into dataframe
+        sim_df = pd.DataFrame({
+            'product_title': df['product_title'],
+            'similarity_score': df['combined_score'].round(2),
+            'bayesian_rating': df['bayesian_rating'].round(2),
+            'rating_number': df['rating_number'],
+            'product_age_days': df['product_age_days'],
+        })
 
-    # Extract the parent_asin of the item 
-    product_id = df.loc[df['product_title'] == item_title,'parent_asin'].values[0]
-    item_index = df[df['parent_asin'] == product_id].index[0]
+        # Sorting similar items by similarity score and rating number in descending order
+        similar_items = sim_df.sort_values(by=["similarity_score","rating_number"],ascending=False)
 
-    # Apply TF-IDF vectorization to text features
-    tfidf_matrix = tfidf_vectorizer.fit_transform(df['title_category'])
-    
-    # Calculate cosine similarity for text features
-    text_sim = cosine_similarity(tfidf_matrix)
-    
-    df['text_similarity'] = text_sim[item_index]
+        # Exclude the item itself
+        similar_items = similar_items.loc[similar_items['product_title'] != item_title]
 
-    #  Normalize numerical features (0 to 1)
-    df_normalized = df.copy()
-    for col in numeric_weights:
-        if numeric_weights[col] > 0:  # Higher is better
-            df_normalized[col] = (df[col] - df[col].min()) / (df[col].max() - df[col].min())
-        else:  # Lower is better (e.g., price)
-            df_normalized[col] = 1 - (df[col] - df[col].min()) / (df[col].max() - df[col].min())
+        # Filter items that meet the rating threshold
+        qualified_items = similar_items[similar_items["rating_number"] > rating_threshold]
 
-    # Calculate numerical scores
-    df['numeric_score'] = (
-    df_normalized['bayesian_rating'] * 0.7 -  # Recommend popular products
-    df_normalized['product_price'] * 0.3  # Recommend less pricey products
-)
-    
-    # Combine scores
-    df['combined_score'] = (text_weight * df['text_similarity']) + ((1 - text_weight) * df['numeric_score'])
-    
-    # Save results into dataframe
-    sim_df = pd.DataFrame({
-        'product_title': df['product_title'],
-        'similarity_score': df['combined_score'].round(2),
-        'bayesian_rating': df['bayesian_rating'].round(2),
-        'rating_number': df['rating_number'],
-        'product_age_days': df['product_age_days'],
-    })
+        # Identify new products (below new_product_threshold)
+        new_items = qualified_items[qualified_items['product_age_days'] <= new_product_threshold]
 
-    # Sorting similar items by similarity score and rating number in descending order
-    similar_items = sim_df.sort_values(by=["similarity_score","rating_number"],ascending=False)
+        # Ensure at least 1 new product is included if possible
+        if len(new_items) >= 1:
+            new_items = new_items.head(1)  # Pick the top new item
+        else:
+            new_items = pd.DataFrame()  # No new products, continue with popular items
 
-    # Exclude the item itself
-    similar_items = similar_items.loc[similar_items['product_title'] != item_title]
+        # Select popular items to fill the remaining spots
+        popular_items = qualified_items.head(top_n - len(new_items))
 
-    # Filter items that meet the rating threshold
-    qualified_items = similar_items[similar_items["rating_number"] > rating_threshold]
+        # Combine both new items and popular items
+        top_similar_items = pd.concat([new_items, popular_items])
 
-    # Identify new products (below new_product_threshold)
-    new_items = qualified_items[qualified_items['product_age_days'] <= new_product_threshold]
+        # Re-sort the combined results by similarity_score  and rating_number
+        top_similar_items = top_similar_items.sort_values(
+        by=["similarity_score", "rating_number"],
+        ascending=[False, False]
+        ).head(top_n)
 
-    # Ensure at least 1 new product is included if possible
-    if len(new_items) >= 1:
-        new_items = new_items.head(1)  # Pick the top new item
-    else:
-        new_items = pd.DataFrame()  # No new products, continue with popular items
-
-    # Select popular items to fill the remaining spots
-    popular_items = qualified_items.head(top_n - len(new_items))
-
-    # Combine both new items and popular items
-    top_similar_items = pd.concat([new_items, popular_items])
-
-    # Re-sort the combined results by similarity_score  and rating_number
-    top_similar_items = top_similar_items.sort_values(
-    by=["similarity_score", "rating_number"],
-    ascending=[False, False]
-    ).head(top_n)
-
+    except Exception as e:
+        logging.error(f"Error in get_recommendations: {str(e)}", exc_info=True)
+        raise
     return top_similar_items
