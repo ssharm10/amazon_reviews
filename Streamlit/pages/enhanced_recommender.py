@@ -67,7 +67,15 @@ def load_tfidf():
     """Load precomputed TF-IDF matrix and reconstruct vectorizer"""
     # Load sparse matrix (fast)
     tfidf_matrix = load_npz('./Streamlit/data/tfidf_matrix.npz')
-    vectorizer = joblib.load('./Streamlit/data/tfidf_vectorizer.joblib')
+    # Rebuild vectorizer with original vocabulary
+    vectorizer = TfidfVectorizer(
+        vocabulary=joblib.load('./Streamlit/data/tfidf_vocab.joblib'),
+        tokenizer=custom_tokenizer,  # Your function must be defined in app.py
+        lowercase=True,
+        min_df=10,
+        max_df=0.7
+    )
+    
     return tfidf_matrix,vectorizer
 
 
