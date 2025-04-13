@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import joblib
+from scipy.sparse import load_npz
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
