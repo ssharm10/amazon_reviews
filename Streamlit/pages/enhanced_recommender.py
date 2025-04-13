@@ -8,6 +8,7 @@ import spacy
 import unicodedata
 import time
 import logging
+import streamlit as st
 logging.basicConfig(level=logging.INFO)
 time.sleep(10)  # Give extra time for cloud initialization
 
@@ -58,6 +59,19 @@ def custom_tokenizer(row):
 
     return unique_tokens  # Convert list to a single string
 
+# Cache the vectorizer to avoid recomputing
+@st.cache_resource 
+def load_vectorizer(df):
+    vectorizer = TfidfVectorizer(
+        tokenizer=custom_tokenizer,
+        lowercase=True,
+        min_df=10,
+        max_df=0.7,
+        stop_words='english'
+    )
+    return vectorizer.fit(df['title_category'])  # Fit only once
+
+
 #Function to generate recommendations
 def get_recommendations(df, item_title, top_n=8, text_weight=0.7, 
                                           numeric_weights={'bayesian_rating': 0.7, 
@@ -83,14 +97,6 @@ def get_recommendations(df, item_title, top_n=8, text_weight=0.7,
         logging.info(f"Input data shape: {df.shape}")  # Check data loaded
     
 
-        # Create TF-IDF vectorizer
-        tfidf_vectorizer = TfidfVectorizer(
-            tokenizer=custom_tokenizer,
-            lowercase=True,
-            min_df=10,
-            max_df=0.7,
-            stop_words='english'
-        )
         logging.info(f"Columns1: {df.columns.tolist()}")
         # Extract the parent_asin of the item 
         product_id = df.loc[df['product_title'] == item_title,'parent_asin'].values[0]
@@ -99,12 +105,14 @@ def get_recommendations(df, item_title, top_n=8, text_weight=0.7,
         logging.info(f"Columns2: {df.columns.tolist()}")
 
         # Apply TF-IDF vectorization to text features
-        tfidf_matrix = tfidf_vectorizer.fit_transform(df['title_category'])
+        vectorizer = load_vectorizer(df)
+        tfidf_matrix = vectorizer.transform(df['title_category'])  # Pre-compute
 
         logging.info(f"Columns3: {df.columns.tolist()}")
         # Calculate cosine similarity for text features
-        text_sim = cosine_similarity(tfidf_matrix)
-
+        #text_sim = cosine_similarity(tfidf_matrix)
+        query_vec = vectorizer.transform([df.loc[item_index, 'title_category']])
+        text_sim = cosine_similarity(query_vec, tfidf_matrix).flatten()  # ← 100x faster
         logging.info(f"Columns4: {df.columns.tolist()}")
         
         df['text_similarity'] = text_sim[item_index]
