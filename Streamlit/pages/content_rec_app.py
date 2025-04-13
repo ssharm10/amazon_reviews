@@ -2,197 +2,143 @@ import streamlit as st
 import pandas as pd
 from enhanced_recommender import get_recommendations
 
-# Configure warnings and page settings
-import warnings
-warnings.filterwarnings("ignore")
-
-st.set_page_config(
-    page_title="Amazon Recommender Pro",
-    page_icon="🛍️",
-    layout="wide"
+# --- Apply Custom CSS for Sidebar Buttons ---
+st.markdown(
+    """
+    <style>
+    /* Style for sidebar buttons */
+    .stButton>button {
+        background-color: #ff4b4b !important;  /* Red color */
+        color: white !important;
+        border-radius: 5px !important;
+        border: none !important;
+        width: 100% !important;
+    }
+    
+    /* Style for the Recommend button (centered & smaller width) */
+    .recommend-btn {
+        display: flex;
+        justify-content: center;
+    }
+    .recommend-btn button {
+        background-color: #f63366 !important; /* Streamlit default primary color */
+        color: white !important;
+        border-radius: 10px !important;
+        width: auto !important;
+        padding: 10px 20px !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
 )
 
-# --- Custom Styling ---
-st.markdown("""
-    <style>
-        .big-font {
-            font-size: 40px !important;
-            color: #3E6B8B;
-            font-weight: bold;
-        }
-        .intro-text {
-            font-size: 18px;
-            color: #4C4C4C;
-        }
-        .custom-btn {
-            background-color: #FF7F50;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-size: 16px;
-            text-align: center;
-        }
-        .header { 
-            background-color: #FF7F50;
-            padding: 20px;
-            border-radius: 10px;
-            color: white;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .sidebar {
-            background-color: #F7F7F7;
-            padding: 20px;
-            border-radius: 10px;
-        }
-        .main-title {
-            font-size: 36px;
-            color: #FF7F50;
-            font-weight: bold;
-        }
-        .stButton>button {
-            background-color: #FF7F50;
-            color: white;
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 16px;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
-# Initialize the session state if it's not already initialized
-if 'page' not in st.session_state:
-    st.session_state.page = 'welcome'
-
-# Sidebar navigation with buttons
+# --- Navigation Sidebar ---
 with st.sidebar:
     st.markdown("## Navigation")
-    
+
     pages = {
-        '🏠 Welcome': 'welcome',
-        '🛒 Product Recommender': 'recommender',
-        'Contact': 'contact'
+        "🏠 Welcome": "welcome",
+        "🛒 Product Recommender": "recommender",
+        "📞 Contact": "contact"
     }
 
-    # Create navigation buttons
     for label, page_key in pages.items():
-        if st.button(label, key=page_key, use_container_width=True, type="primary" if st.session_state.page == page_key else "secondary"):
+        if st.button(label, key=page_key):
             st.session_state.page = page_key
-            st.rerun()
 
+# --- Product Recommender Page ---
+if "page" not in st.session_state:
+    st.session_state.page = "welcome"
 
 # Display content based on the selected page
 if st.session_state.page == 'welcome':
     # --- Welcome Page Layout ---
     st.title("🛍️ Welcome to the Amazon Pro Recommender 🛍️")
     
-    st.markdown("""
-    ## Project Overview:
-    <p class="list-style">
-        In the competitive world of e-commerce, enhancing the customer experience is key to driving sales, improving customer retention, and building long-term relationships. This project seeks to tackle some of the most pressing challenges in the field by developing a state-of-the-art product recommender system. The aim is to provide personalized and relevant product recommendations based on customer preferences, behavior, and a combination of advanced recommendation techniques.
-    </p>
+    st.markdown("""  
+
+    This **next-gen recommender** combines signals from different product attributes to surface truly relevant products on Amazon.
+                
+    ### Key Features of the Recommender:
+    - **🔍 Textual Similarity**: Finds hidden gems using NLP on product titles/categories
+    - **📈 Confidence-Boosted Ratings**: Helps prioritize truly popular products using Bayesian ratings.
+    - **📊 Business Logic**: Factors in pricing and rating counts.
+    - **🆕 New Product Visibility**: Prioritizes at least one new product to give newer items a chance to gain traction.
     
-    <p class="list-style">
-        The core of this project is a <b><span class="highlight">hybrid recommender system</span></b> that integrates a variety of methods to deliver more precise and diverse recommendations. This system is designed not only to predict which products customers are most likely to purchase but also to surface products that match their unique tastes and preferences. Here's how the model works:
-    </p>
-    
-    <ul class="list-style">
-        <li>🔍 <b><span class="highlight">Textual Similarity</span></b>: The system leverages natural language processing (NLP) to analyze product titles, descriptions, and categories, helping to identify products that share similar attributes and characteristics. This helps customers discover items that align with their specific needs.</li>
-        <li>📈 <b><span class="highlight">Bayesian Ratings</span></b>: To refine the accuracy of recommendations, Bayesian ratings adjust product scores based on factors such as confidence and historical performance. Products that are frequently rated highly are prioritized, while new or less-popular items are given a fair chance.</li>
-        <li>📊 <b><span class="highlight">Business Logic Integration</span></b>: The recommender model incorporates various business rules, including price sensitivity (e.g., suggesting products within a customer’s budget) and the number of ratings (to avoid recommending products with insufficient feedback). These rules add an important layer of contextual relevance.</li>
-        <li>🆕 <b><span class="highlight">New Product Visibility</span></b>: A key feature of this system is ensuring that new products are not left out. The model actively includes newly launched products in the recommendations, helping to give them visibility and potentially accelerate their adoption.</li>
-        <li>🔄 <b><span class="highlight">Hybrid Approach</span></b>: By combining textual similarity, Bayesian ratings, and business logic, the recommender system offers a balanced approach that caters to both popular, highly-rated products and less-known, emerging items that customers may find interesting.</li>
-    </ul>
-
-    <p class="list-style">
-        Overall, this hybrid recommendation engine is designed to enhance the customer shopping experience by ensuring that recommendations are not only relevant but also dynamic and varied. By offering personalized suggestions and boosting product visibility, we aim to increase sales and drive customer loyalty.
-    </p>
-""", unsafe_allow_html=True)
-    
-    # st.markdown("""
-    # ## Project Overview:
-    # This project tackles critical challenges in e-commerce:
-
-    # Personalized recommendations drive repeat purchases, improving customer retention and sales growth.
-    
-    # We build a hybrid recommender model combining:
-
-    # - **Textual similarity** (NLP on product titles/categories)
-    # - **Bayesian ratings** (confidence-weighted scores)
-    # - **Business logic** (price sensitivity, rating counts)
-    # - **New Product Visibility**: Ensures recommendations include at least one new product
-    # This recommendation engine balances textual similarity with Bayesian-adjusted ratings to surface high-potential products.
-
-    # """)
-
-elif st.session_state.page == 'recommender':
-    # --- Product Recommender Page Layout ---
-    st.title("🔍 Amazon Product Recommender")
-    st.markdown("""
-        **Discover Similar Products** with Bayesian Ratings and Content-Based Filtering.
-
-        *How it works:*  
-        - Enter a product name  
-        - Adjust filters (ratings, number of recs)  
-        - Click Recommend button to get results  
-
-        ### Key Features of the Recommender:
-        - **Text Based Similarity**: Calculates Cosine Similarity using both the product titles and categories.
-        - **Bayesian Ratings**: Helps prioritize truly popular products.
-        - **Rating Number**: Boosts products with higher number of ratings.
-        - **Product Price**: Recommends lower-priced products where appropriate.
-        - **New Product Visibility**: Prioritizes at least one new product to give newer items a chance to gain traction.
+    **Why this works?**
+    - Solves the "cold start" problem - Recommends great products immediately, even for new items with no purchase history.
+    - Works without mass user data - Delivers personalized suggestions where most customers only buy once.
+    - Fraud-resistant design - Bayesian ratings automatically downweight suspicious products (like those with few inflated ratings) while promoting genuinely popular items.
+                
+    *See it in action → Click "Product Recommender" in the sidebar*
     """)
 
+elif st.session_state.page == "recommender":
+    st.markdown("<h1 style='text-align: center;'>Amazon Pro Recommender</h1>", 
+                unsafe_allow_html=True)
+
     # Initialize session state variables
-    if 'run_recommender' not in st.session_state:
+    if "run_recommender" not in st.session_state:
         st.session_state.run_recommender = False
-    if 'item_title' not in st.session_state:
+    if "item_title" not in st.session_state:
         st.session_state.item_title = ""
-    if 'top_n' not in st.session_state:
+    if "top_n" not in st.session_state:
         st.session_state.top_n = 8
-    if 'rating_threshold' not in st.session_state:
+    if "rating_threshold" not in st.session_state:
         st.session_state.rating_threshold = 20
 
     # Cache data loading
     @st.cache_data
     def load_data():
-        return pd.read_pickle('./Streamlit/data/content_rec_data.pkl')
+        return pd.read_pickle("./Streamlit/data/content_rec_data.pkl")
 
     rec_data = load_data()
 
-    # --- Sidebar Inputs ---
-    with st.sidebar:
-        st.header("⚙️ Settings")
-        item_title = st.selectbox(
-            "Select a Product:", 
-            rec_data['product_title'],
-            help="Start typing to search products"
-        )
-        top_n = st.slider("Number of recommendations:", 1, 20, 8)
-        rating_threshold = st.slider("Minimum ratings:", 0, 1000, 20)
+    # --- Main Page Inputs ---
+    
+    st.markdown("""
+    <div style="text-align: center;">
+    <h4>Find Your Perfect Match</h4>
+    </div>
+    """, unsafe_allow_html=True)
+    st.subheader("3 Simple Steps:")
+    st.markdown("""
+    1. **🔍 Search** - Type or select a product below  
+    2. **📏 Customize** - Choose how many recommendations you want (1-20)  
+    3. **⭐ Filter** - Set a minimum rating count for quality assurance (20-1000) 
+    """)
 
-        # Check if inputs have changed
-        if (item_title != st.session_state.item_title or 
-            top_n != st.session_state.top_n or
-            rating_threshold != st.session_state.rating_threshold):
-            st.session_state.run_recommender = False   
+    item_title = st.selectbox(
+        "Select a Product:", 
+        rec_data["product_title"],
+        help="Start typing to search products"
+    )
+    top_n = st.slider("Number of recommendations:", 1, 20, 8)
+    rating_threshold = st.slider("Minimum ratings:", 20, 1000, 20)
 
-        # Button triggers recommendation generation
-        if st.button("Recommend", use_container_width=True):
-            st.session_state['run_recommender'] = True
-            st.session_state['item_title'] = item_title
-            st.session_state['top_n'] = top_n
-            st.session_state['rating_threshold'] = rating_threshold
+    # Check if inputs have changed
+    if (item_title != st.session_state.item_title or 
+        top_n != st.session_state.top_n or
+        rating_threshold != st.session_state.rating_threshold):
+        st.session_state.run_recommender = False   
 
-    # --- Display Recommendations on Main Page ---
+    # Button triggers recommendation generation (Styled & Centered)
+    col1, col2, col3 = st.columns([2, 1, 2])  # Centering the button
+    with col2:
+        if st.button("Recommend", key="recommend-btn", use_container_width=False):
+            st.session_state["run_recommender"] = True
+            st.session_state["item_title"] = item_title
+            st.session_state["top_n"] = top_n
+            st.session_state["rating_threshold"] = rating_threshold
+
+    # --- Display Recommendations ---
     if st.session_state.get("run_recommender", False): 
-        with st.spinner('Hang on tight, Generating recommendations...'):
+        with st.spinner("Hang on tight, Generating recommendations..."):
             recommendations = get_recommendations(
                 rec_data, 
-                st.session_state['item_title'], 
-                top_n=st.session_state['top_n'],
-                rating_threshold=st.session_state['rating_threshold']
+                st.session_state["item_title"], 
+                top_n=st.session_state["top_n"],
+                rating_threshold=st.session_state["rating_threshold"]
             )
         
         st.success("Done!")
@@ -202,3 +148,41 @@ elif st.session_state.page == 'recommender':
         else:
             st.subheader(f"✨ Recommendations for: {st.session_state['item_title']}")
             st.dataframe(recommendations)
+
+elif st.session_state.page == "contact":
+    st.title("Let's Chat!")
+    
+    st.markdown("""
+    **Hi there! I'm Soniya**  
+    *Data Scientist • Former NASA Researcher • Science Storyteller*
+    """)
+    
+    st.markdown("""
+    My data science journey began among the stars (literally!) - from reconstructing galaxies at NASA to 
+    optimizing chip fabrication at Intel. When I realized how much I loved turning complex data into 
+    actionable insights, I took the leap into data science through BrainStation's intensive bootcamp.
+    """)
+    
+    st.markdown("""
+    This recommender system is just one slice of my capstone project! On [GitHub](github.com/ssharm10), 
+    you can explore:
+    - 🛍️ **How I predicted Amazon product popularity** using machine learning
+    - 📊 **The full analysis** from metadata cleaning to Bayesian ratings
+    - 🧠 **Why I chose this hybrid approach** over traditional methods
+    """)
+    
+    st.markdown("""
+    What excites me most? Building solutions that actually work in the real world!
+    """)
+    
+    st.markdown("---")
+    
+    st.markdown("**Let's talk data, ML, or even astrophysics!**")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("✉️ [soniya.iiser@gmail.com]")  
+        st.markdown("🔗 [linkedin.com/in/sharma-soniya]")  
+    with col2:
+        st.markdown("💻 [github.com/ssharm10]")  
+    
+    st.markdown("*P.S. Ask me about my FameLab science communication experience!*")

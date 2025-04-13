@@ -143,6 +143,12 @@ def get_recommendations(df, item_title, top_n=8, text_weight=0.7,
     popular_items = qualified_items.head(top_n - len(new_items))
 
     # Combine both new items and popular items
-    top_similar_items = pd.concat([new_items, popular_items]).head(top_n)
+    top_similar_items = pd.concat([new_items, popular_items])
+
+    # Re-sort the combined results by similarity_score  and rating_number
+    top_similar_items = top_similar_items.sort_values(
+    by=["similarity_score", "rating_number"],
+    ascending=[False, False]
+    ).head(top_n)
 
     return top_similar_items
