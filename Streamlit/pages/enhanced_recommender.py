@@ -65,19 +65,10 @@ def custom_tokenizer(row):
 # Cache the vectorizer to avoid recomputing
 @st.cache_resource
 def load_tfidf():
-    """Load precomputed TF-IDF matrix and reconstruct vectorizer"""
-    # Load sparse matrix (fast)
+    """Load the pre-fitted vectorizer and matrix"""
+    vectorizer = joblib.load('./Streamlit/data/tfidf_vectorizer.joblib')
     tfidf_matrix = load_npz('./Streamlit/data/tfidf_matrix.npz')
-    # Rebuild vectorizer with original vocabulary
-    vectorizer = TfidfVectorizer(
-        vocabulary=joblib.load('./Streamlit/data/tfidf_vocab.joblib'),
-        tokenizer=custom_tokenizer,  # Your function must be defined in app.py
-        lowercase=True,
-        min_df=10,
-        max_df=0.7
-    )
-    vectorizer._tfidf = TfidfTransformer()
-    return tfidf_matrix,vectorizer
+    return tfidf_matrix, vectorizer
 
 
 #Function to generate recommendations
