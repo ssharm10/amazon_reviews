@@ -1,10 +1,10 @@
 streamlit
 joblib
-numpy==2.0.2
+numpy
 pandas
 scikit-learn
 matplotlib
 seaborn
 spacy==3.8.2
 #thinc==8.3.2
-#https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.7.0/en_core_web_lg-3.7.0.tar.gz
+en-core-web-lg @ https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.8.0/en_core_web_lg-3.8.0.tar.gz
