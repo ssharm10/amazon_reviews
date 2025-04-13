@@ -127,7 +127,7 @@ def get_recommendations(df, item_title, top_n=8, text_weight=0.7,
             'rating_number': df['rating_number'],
             'product_age_days': df['product_age_days'],
         })
-
+        logging.info(f"sim_df shape: {sim_df.shape}")
         # Sorting similar items by similarity score and rating number in descending order
         similar_items = sim_df.sort_values(by=["similarity_score","rating_number"],ascending=False)
 
@@ -139,7 +139,7 @@ def get_recommendations(df, item_title, top_n=8, text_weight=0.7,
 
         # Identify new products (below new_product_threshold)
         new_items = qualified_items[qualified_items['product_age_days'] <= new_product_threshold]
-
+        logging.info(f"new_items length: {len(new_items)}")
         # Ensure at least 1 new product is included if possible
         if len(new_items) >= 1:
             new_items = new_items.head(1)  # Pick the top new item
@@ -151,7 +151,7 @@ def get_recommendations(df, item_title, top_n=8, text_weight=0.7,
 
         # Combine both new items and popular items
         top_similar_items = pd.concat([new_items, popular_items])
-
+        logging.info(f"top_similar_items shape: {top_similar_items.shape}")
         # Re-sort the combined results by similarity_score  and rating_number
         top_similar_items = top_similar_items.sort_values(
         by=["similarity_score", "rating_number"],
