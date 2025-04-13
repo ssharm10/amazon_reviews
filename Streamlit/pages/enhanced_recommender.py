@@ -88,8 +88,7 @@ def get_recommendations(df, item_title, top_n=8, text_weight=0.7,
             max_df=0.7,
             stop_words='english'
         )
-        logging.info(f"Columns: {df.columns.tolist()}")
-        
+
         # Extract the parent_asin of the item 
         product_id = df.loc[df['product_title'] == item_title,'parent_asin'].values[0]
         item_index = df[df['parent_asin'] == product_id].index[0]
@@ -101,7 +100,7 @@ def get_recommendations(df, item_title, top_n=8, text_weight=0.7,
         text_sim = cosine_similarity(tfidf_matrix)
         
         df['text_similarity'] = text_sim[item_index]
-
+        logging.info(f"Columns: {df.columns.tolist()}")
         #  Normalize numerical features (0 to 1)
         df_normalized = df.copy()
         for col in numeric_weights:
