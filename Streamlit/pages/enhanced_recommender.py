@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import joblib
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -60,16 +61,13 @@ def custom_tokenizer(row):
     return unique_tokens  # Convert list to a single string
 
 # Cache the vectorizer to avoid recomputing
-@st.cache_resource 
-def load_vectorizer(df):
-    vectorizer = TfidfVectorizer(
-        tokenizer=custom_tokenizer,
-        lowercase=True,
-        min_df=10,
-        max_df=0.7,
-        stop_words='english'
-    )
-    return vectorizer.fit(df['title_category'])  # Fit only once
+@st.cache_resource
+def load_tfidf():
+    """Load precomputed TF-IDF matrix and reconstruct vectorizer"""
+    # Load sparse matrix (fast)
+    tfidf_matrix = load_npz('../data/tfidf_matrix.npz')
+    vectorizer = joblib.load('../data/tfidf_vectorizer.joblib')
+    return tfidf_matrix,vectorizer
 
 
 #Function to generate recommendations
@@ -105,8 +103,7 @@ def get_recommendations(df, item_title, top_n=8, text_weight=0.7,
         logging.info(f"Columns2: {df.columns.tolist()}")
 
         # Apply TF-IDF vectorization to text features
-        vectorizer = load_vectorizer(df)
-        tfidf_matrix = vectorizer.transform(df['title_category'])  # Pre-compute
+        tfidf_matrix, vectorizer = load_tfidf()
 
         logging.info(f"Columns3: {df.columns.tolist()}")
         # Calculate cosine similarity for text features
