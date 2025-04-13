@@ -66,8 +66,8 @@ def custom_tokenizer(row):
 def load_tfidf():
     """Load precomputed TF-IDF matrix and reconstruct vectorizer"""
     # Load sparse matrix (fast)
-    tfidf_matrix = load_npz('../data/tfidf_matrix.npz')
-    vectorizer = joblib.load('../data/tfidf_vectorizer.joblib')
+    tfidf_matrix = load_npz('./Streamlit/data/tfidf_matrix.npz')
+    vectorizer = joblib.load('./Streamlit/data/tfidf_vectorizer.joblib')
     return tfidf_matrix,vectorizer
 
 
