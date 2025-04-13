@@ -6,14 +6,15 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import spacy
 import unicodedata
-
+import time
+time.sleep(10)  # Give extra time for cloud initialization
 
 # # First download the Large English Pipeline from Spacy
 #!python -m spacy download en_core_web_lg
 
 # Then Load the large English pipeline
 nlp = spacy.load('en_core_web_lg', disable=["parser", "ner"])  # Disabling parser & NER for efficiency
-
+print("✅ spaCy loaded successfully!")  # Check if this appears in logs
 def normalize_text(text):
     """
     Normalizes text by converting special Unicode characters into standard ASCII.
@@ -83,6 +84,7 @@ def get_recommendations(df, item_title, top_n=8, text_weight=0.7,
 
         # Create TF-IDF vectorizer
         tfidf_vectorizer = TfidfVectorizer(
+            tokenizer=custom_tokenizer,
             lowercase=True,
             min_df=10,
             max_df=0.7,
