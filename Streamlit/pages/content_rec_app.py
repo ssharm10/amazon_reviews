@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from enhanced_recommender import get_recommendations
+from tokenizer import custom_tokenizer
 
 # --- Apply Custom CSS for Sidebar Buttons ---
 st.markdown(
