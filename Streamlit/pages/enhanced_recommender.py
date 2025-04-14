@@ -63,21 +63,6 @@ def custom_tokenizer(row):
     return unique_tokens  # Convert list to a single string
 
 # Cache the vectorizer to avoid recomputing
-class CustomTokenizerVectorizer(TfidfVectorizer):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        
-    @staticmethod
-    def custom_tokenizer(text):
-        # IDENTICAL implementation as in notebook
-        normalized_text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode('utf-8')
-        parsed = nlp(normalized_text)
-        return [
-            token.lemma_.lower()
-            for token in parsed
-            if token.is_alpha and not token.is_stop and len(token) > 3
-        ]
-
 @st.cache_resource
 def load_tfidf():
     """Load the pre-fitted vectorizer and matrix"""
