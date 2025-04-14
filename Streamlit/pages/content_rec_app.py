@@ -132,49 +132,50 @@ if st.session_state.page == "🏠 Welcome":
     ##### *See it in action → Click "Product Recommender" in the sidebar*
     """)
 
-# --- Main Page Inputs ---
+# --- Recommender Page ---
+elif st.session_state.page == "🛒 Product Recommender":
+    st.markdown("<h1 style='text-align: center;'>Amazon Pro Recommender</h1>", 
+                unsafe_allow_html=True)
+
+    st.markdown("""
+    <div style="text-align: center;">
+    <h4>🛍️ Find Your Perfect Match 🛍️ </h4>
+    </div>
+    """, unsafe_allow_html=True)
     
-st.markdown("""
-<div style="text-align: center;">
-<h4>Find Your Perfect Match</h4>
-</div>
-""", unsafe_allow_html=True)
-st.subheader("3 Simple Steps:")
-st.markdown("""
-1. **🔍 Search** - Type or select a product below  
-2. **📏 Customize** - Choose how many recommendations you want (1-20)  
-3. **⭐ Filter** - Set a minimum rating count for quality assurance (20-1000) 
-""")
+    st.markdown("""
+        <div style="background-color: #f9f9f9; border-left: 5px solid #e75480; padding: 1rem; border-radius: 8px; margin-top: 1.5rem; margin-bottom: 1.5rem;">
+            <h4 style="margin-top: 0;">3 Simple Steps:</h4>
+            <ul style="padding-left: 1.2rem; margin-bottom: 0;">
+                <li><b>🔍 Search</b> – Type or select a product below</li>
+                <li><b>📏 Customize</b> – Choose how many recommendations you want (1–20)</li>
+                <li><b>⭐ Filter</b> – Set a minimum rating count for quality assurance (20–1000)</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
 
-item_title = st.selectbox(
-    "Select a Product:", 
-    rec_data["product_title"],
-    help="Start typing to search products"
-)
-top_n = st.slider("Number of recommendations:", 1, 20, 8)
-rating_threshold = st.slider("Minimum ratings:", 20, 1000, 20)
+    item_title = st.selectbox(
+        "Select a Product:", 
+        rec_data["product_title"],
+        help="Start typing to search products"
+    )
+    top_n = st.slider("Number of recommendations:", 1, 20, 8)
+    rating_threshold = st.slider("Minimum ratings:", 20, 1000, 20)
 
-# --- Initialize session state variables ---
-for key, default in {
-    "item_title": "",
-    "top_n": 8,
-    "rating_threshold": 20,
-    "run_recommender": False,
-}.items():
-    if key not in st.session_state:
-        st.session_state[key] = default
+    # Centered recommend button
+    if st.button("Recommend", key="recommend-btn"):
+        with st.spinner("Hang on tight, generating recommendations..."):
+            recommendations = get_recommendations(
+                rec_data, 
+                item_title, 
+                top_n=top_n,
+                rating_threshold=rating_threshold
+            )
 
-# Check if inputs have changed
-if (item_title != st.session_state.item_title or 
-    top_n != st.session_state.top_n or
-    rating_threshold != st.session_state.rating_threshold):
-    st.session_state.run_recommender = False   
+        st.success("Done!")
 
-# Button triggers recommendation generation (Styled & Centered)
-col1, col2, col3 = st.columns([2, 1, 2])  # Centering the button
-with col2:
-    if st.button("Recommend", key="recommend-btn", use_container_width=False):
-        st.session_state["run_recommender"] = True
-        st.session_state["item_title"] = item_title
-        st.session_state["top_n"] = top_n
-        st.session_state["rating_threshold"] = rating_threshold
+        if recommendations.empty:
+            st.warning("No recommendations found. Try relaxing your filters (e.g., lower rating threshold).")
+        else:
+            st.subheader(f"✨ Recommendations for: {item_title}")
+            st.dataframe(recommendations)
