@@ -405,5 +405,4 @@ elif st.session_state.page == "contact":
         st.markdown("🔗 [linkedin.com/in/sharma-soniya]")  
     with col2:
         st.markdown("💻 [github.com/ssharm10]")  
-    
-    st.markdown("*P.S. Ask me about my FameLab science communication experience!*") What are the different way of showing the navigation pane, i dont like the format of buttton
+ 
