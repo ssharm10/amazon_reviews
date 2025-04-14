@@ -94,3 +94,40 @@ def load_data():
     return pd.read_pickle("./Streamlit/data/content_rec_data.pkl")
 
 rec_data = load_data()
+
+# --- Main Page Inputs ---
+    
+st.markdown("""
+<div style="text-align: center;">
+<h4>Find Your Perfect Match</h4>
+</div>
+""", unsafe_allow_html=True)
+st.subheader("3 Simple Steps:")
+st.markdown("""
+1. **🔍 Search** - Type or select a product below  
+2. **📏 Customize** - Choose how many recommendations you want (1-20)  
+3. **⭐ Filter** - Set a minimum rating count for quality assurance (20-1000) 
+""")
+
+item_title = st.selectbox(
+    "Select a Product:", 
+    rec_data["product_title"],
+    help="Start typing to search products"
+)
+top_n = st.slider("Number of recommendations:", 1, 20, 8)
+rating_threshold = st.slider("Minimum ratings:", 20, 1000, 20)
+
+# Check if inputs have changed
+if (item_title != st.session_state.item_title or 
+    top_n != st.session_state.top_n or
+    rating_threshold != st.session_state.rating_threshold):
+    st.session_state.run_recommender = False   
+
+# Button triggers recommendation generation (Styled & Centered)
+col1, col2, col3 = st.columns([2, 1, 2])  # Centering the button
+with col2:
+    if st.button("Recommend", key="recommend-btn", use_container_width=False):
+        st.session_state["run_recommender"] = True
+        st.session_state["item_title"] = item_title
+        st.session_state["top_n"] = top_n
+        st.session_state["rating_threshold"] = rating_threshold
