@@ -3,35 +3,35 @@ import pandas as pd
 from enhanced_recommender import get_recommendations
 from tokenizer import custom_tokenizer
 
-# --- Apply Custom CSS for Sidebar Buttons ---
-st.markdown(
-    """
-    <style>
-    /* Style for sidebar buttons */
-    .stButton>button {
-        background-color: #ff4b4b !important;  /* Red color */
-        color: white !important;
-        border-radius: 5px !important;
-        border: none !important;
-        width: 100% !important;
-    }
+# # --- Apply Custom CSS for Sidebar Buttons ---
+# st.markdown(
+#     """
+#     <style>
+#     /* Style for sidebar buttons */
+#     .stButton>button {
+#         background-color: #ff4b4b !important;  /* Red color */
+#         color: white !important;
+#         border-radius: 5px !important;
+#         border: none !important;
+#         width: 100% !important;
+#     }
     
-    /* Style for the Recommend button (centered & smaller width) */
-    .recommend-btn {
-        display: flex;
-        justify-content: center;
-    }
-    .recommend-btn button {
-        background-color: #f63366 !important; /* Streamlit default primary color */
-        color: white !important;
-        border-radius: 10px !important;
-        width: auto !important;
-        padding: 10px 20px !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+#     /* Style for the Recommend button (centered & smaller width) */
+#     .recommend-btn {
+#         display: flex;
+#         justify-content: center;
+#     }
+#     .recommend-btn button {
+#         background-color: #f63366 !important; /* Streamlit default primary color */
+#         color: white !important;
+#         border-radius: 10px !important;
+#         width: auto !important;
+#         padding: 10px 20px !important;
+#     }
+#     </style>
+#     """,
+#     unsafe_allow_html=True
+# )
 
 # --- Navigation Sidebar ---
 with st.sidebar:
