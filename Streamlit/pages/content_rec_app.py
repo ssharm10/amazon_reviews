@@ -117,6 +117,16 @@ item_title = st.selectbox(
 top_n = st.slider("Number of recommendations:", 1, 20, 8)
 rating_threshold = st.slider("Minimum ratings:", 20, 1000, 20)
 
+# --- Initialize session state variables ---
+for key, default in {
+    "item_title": "",
+    "top_n": 8,
+    "rating_threshold": 20,
+    "run_recommender": False,
+}.items():
+    if key not in st.session_state:
+        st.session_state[key] = default
+
 # Check if inputs have changed
 if (item_title != st.session_state.item_title or 
     top_n != st.session_state.top_n or
