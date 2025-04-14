@@ -179,3 +179,40 @@ elif st.session_state.page == "🛒 Product Recommender":
         else:
             st.subheader(f"✨ Recommendations for: {item_title}")
             st.dataframe(recommendations)
+
+# --- Contact Page ---
+elif st.session_state.page == "📞 Contact":
+    st.title("Let's Chat!")
+    
+    st.markdown("""
+    **Hi there! I'm Soniya**  
+    *Data Scientist • Former NASA Researcher • Science Storyteller*
+    """)
+
+    st.markdown("""
+    My data science journey began among the stars (literally!) - from reconstructing galaxies at NASA to 
+    optimizing chip fabrication at Intel. When I realized how much I loved turning complex data into 
+    actionable insights, I took the leap into data science through BrainStation's intensive bootcamp.
+    """)
+
+    st.markdown("""
+    This recommender system is just one slice of my capstone project! On [GitHub](https://github.com/ssharm10), 
+    you can explore:
+    - 🛍️ **How I predicted Amazon product popularity**
+    - 📊 **The full analysis** from metadata cleaning to Bayesian ratings
+    - 🧠 **Why I chose this hybrid approach**
+    """)
+
+    st.markdown("""
+    What excites me most? Building solutions that actually work in the real world!
+    """)
+
+    st.markdown("---")
+    st.markdown("**Let's talk data, ML, or even astrophysics!**")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("✉️ [soniya.iiser@gmail.com](mailto:soniya.iiser@gmail.com)")  
+        st.markdown("🔗 [LinkedIn](https://linkedin.com/in/sharma-soniya)")  
+    with col2:
+        st.markdown("💻 [GitHub](https://github.com/ssharm10)")
