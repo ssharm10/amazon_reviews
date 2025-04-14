@@ -87,3 +87,10 @@ with st.sidebar:
         if st.button(label, key=key):
             st.session_state.page = label
             st.rerun()
+
+# --- Load Data ---
+@st.cache_resource
+def load_data():
+    return pd.read_pickle("./Streamlit/data/content_rec_data.pkl")
+
+rec_data = load_data()
