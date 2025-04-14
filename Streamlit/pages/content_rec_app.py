@@ -95,6 +95,43 @@ def load_data():
 
 rec_data = load_data()
 
+# --- Welcome Page ---
+if st.session_state.page == "🏠 Welcome":
+    st.markdown("""
+    <h1 style='text-align: center; font-size: 1.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>
+        🛍️ Welcome to the Amazon Pro Recommender 🛍️
+    </h1>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""  
+    *This next-gen recommender combines signals from different product attributes to surface truly relevant products on Amazon.*
+                
+    #### Key Features of the Recommender:
+    - **🔍 Textual Similarity**: Finds hidden gems using NLP on product titles/categories
+    - **📈 Confidence-Boosted Ratings**: Helps prioritize truly popular products using Bayesian ratings.
+    - **📊 Business Logic**: Factors in pricing and rating counts.
+    - **🆕 New Product Visibility**: Prioritizes at least one new product to give newer items a chance to gain traction.
+    
+    #### 💡 Why this Works:
+
+    - **Works Without Mass User Data**  
+    Delivers personalized suggestions by analyzing product content — ideal for platforms where users often make one-off purchases and traditional collaborative filtering falls short.
+
+    - **Solves the "Cold Start" Problem for Users**  
+    Because it's content-based, it can recommend similar items even if a user has only interacted with one product — no need for long histories or lots of reviews.
+
+    - **Minimizes Review Manipulation Impact**  
+    Bayesian adjustment and minimum rating thresholds ensure products are fairly ranked, protecting against spammy or biased reviews.
+
+    - **Elevates Relevant Hidden Gems**  
+    NLP-based similarity highlights lesser-known but closely related items, surfacing options beyond just bestsellers.
+
+    - **Business Logic Built In**  
+    The system blends ratings, price, and visibility for new products — providing practical, balanced results for e-commerce scenarios.
+                
+    ##### *See it in action → Click "Product Recommender" in the sidebar*
+    """)
+
 # --- Main Page Inputs ---
     
 st.markdown("""
