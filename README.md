@@ -129,7 +129,7 @@ Key Features:
 - Product Price: Considers less expensive products alongside popular ones.
 - New Product Visibility: Ensures recommendations include at least one new product.
 
-This approach enhances recommendations by blending text similarity with key business factors, while promoting newer products, all accessible through an interactive Streamlit interface.
+This approach enhances recommendations by blending text similarity with key business factors, while promoting newer products, all accessible through an interactive [Streamlit interface](https://amazon-pro-recommender.streamlit.app/).
 
 ## Project Organization
 

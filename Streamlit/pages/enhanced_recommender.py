@@ -16,10 +16,10 @@ logging.basicConfig(level=logging.INFO)
 
 # Then Load the large English pipeline
 nlp = spacy.load('en_core_web_lg', disable=["parser", "ner"])  # Disabling parser & NER for efficiency
-logging.info("✅ spaCy loaded successfully!")  # Check if this appears in logs
+logging.info("spaCy loaded successfully!")  # Logging 
 
 # Cache the vectorizer to avoid recomputing
-@st.cache_resource
+@st.cache_resource(ttl=3600)
 def load_tfidf():
     """Load the pre-fitted vectorizer and matrix"""
     vectorizer = joblib.load('./Streamlit/data/tfidf_vectorizer.joblib')
